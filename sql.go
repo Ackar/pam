@@ -22,7 +22,7 @@ func sqlTypeToGo(t *sql.ColumnType) interface{} {
 	case "VARCHAR":
 		var s string
 		return &s
-	case "INT":
+	case "INT", "DECIMAL":
 		var i int
 		return &i
 	default:

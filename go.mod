@@ -7,6 +7,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-openapi/strfmt v0.19.4 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/jackc/pgx/v4 v4.4.1
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/mattn/go-isatty v0.0.12 // indirect

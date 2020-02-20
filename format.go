@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -89,6 +91,40 @@ type renderer struct {
 }
 
 func (r *renderer) renderResults(columns []string, rows [][]interface{}) {
+	if len(rows) == 0 {
+		fmt.Println("No rows")
+		return
+	}
+
+	maxRowSize := 0
+	var convertedRows [][]interface{}
+	for _, r := range rows {
+		convertedRow := convertRow(r)
+		convertedRows = append(convertedRows, convertedRow)
+
+		size := rowSize(convertedRow)
+		if size > maxRowSize {
+			maxRowSize = size
+		}
+	}
+
+	fmt.Printf("row size is %d\n", maxRowSize)
+	if maxRowSize > 100 {
+		for _, r := range convertedRows {
+			t := table.NewWriter()
+			t.SetOutputMirror(os.Stdout)
+			t.SetStyle(table.StyleRounded)
+
+			for i, c := range r {
+				t.AppendRow(table.Row{columns[i], c})
+			}
+
+			t.Render()
+		}
+
+		return
+	}
+
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.SetStyle(table.StyleRounded)
@@ -98,17 +134,34 @@ func (r *renderer) renderResults(columns []string, rows [][]interface{}) {
 		header = append(header, c)
 	}
 	t.AppendHeader(header)
-	for _, r := range rows {
-		var row []interface{}
-		for _, a := range r {
-			switch v := a.(type) {
-			case *string:
-				row = append(row, *v)
-			case *int:
-				row = append(row, *v)
-			}
-		}
-		t.AppendRow(row)
+	for _, r := range convertedRows {
+		t.AppendRow(r)
 	}
 	t.Render()
+}
+
+func rowSize(r []interface{}) int {
+	var buf strings.Builder
+	for _, c := range r {
+		buf.WriteString(fmt.Sprint(c))
+	}
+
+	return buf.Len()
+}
+
+func convertRow(r []interface{}) []interface{} {
+	var row []interface{}
+	for _, a := range r {
+		row = append(row, ptrToType(a))
+	}
+
+	return row
+}
+
+func ptrToType(v interface{}) interface{} {
+	value := reflect.ValueOf(v)
+	if value.IsNil() {
+		return nil
+	}
+	return value.Elem().Interface()
 }
