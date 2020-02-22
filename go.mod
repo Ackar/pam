@@ -7,6 +7,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/go-openapi/strfmt v0.19.4 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/jackc/pgx v3.6.2+incompatible
 	github.com/jackc/pgx/v4 v4.4.1
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/jmoiron/sqlx v1.2.0
@@ -16,5 +17,6 @@ require (
 	github.com/pingcap/parser v0.0.0-20200207090844-d65f5147dd9f
 	github.com/pingcap/tidb v1.1.0-beta.0.20200207172026-c7b43f3c7549
 	github.com/pkg/term v0.0.0-20190109203006-aa71e9d9e942 // indirect
+	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413
 	golang.org/x/sys v0.0.0-20200217220822-9197077df867 // indirect
 )

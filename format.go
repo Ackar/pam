@@ -13,9 +13,22 @@ import (
 
 type CustomWriter struct {
 	prompt.PosixWriter
+	colorSet bool
+}
+
+func (c *CustomWriter) SetColor(fg, bg prompt.Color, bold bool) {
+	// is there already some highlighting going on?
+	c.colorSet = fg != prompt.DefaultColor || bg != prompt.DefaultColor || bold
+
+	c.PosixWriter.SetColor(fg, bg, bold)
 }
 
 func (c *CustomWriter) displayWord(w string) {
+	if c.colorSet {
+		c.PosixWriter.WriteStr(w)
+		return
+	}
+
 	switch wordType(w) {
 	case keyword:
 		c.PosixWriter.SetColor(prompt.Blue, prompt.DefaultColor, false)
@@ -88,6 +101,13 @@ func wordType(w string) tokenType {
 }
 
 type renderer struct {
+	width int
+}
+
+func newRenderer(width int) *renderer {
+	return &renderer{
+		width: width,
+	}
 }
 
 func (r *renderer) renderResults(columns []string, rows [][]interface{}) {
@@ -96,7 +116,7 @@ func (r *renderer) renderResults(columns []string, rows [][]interface{}) {
 		return
 	}
 
-	maxRowSize := 0
+	maxRowSize := columnsSize(columns)
 	var convertedRows [][]interface{}
 	for _, r := range rows {
 		convertedRow := convertRow(r)
@@ -108,8 +128,7 @@ func (r *renderer) renderResults(columns []string, rows [][]interface{}) {
 		}
 	}
 
-	fmt.Printf("row size is %d\n", maxRowSize)
-	if maxRowSize > 100 {
+	if maxRowSize > r.width {
 		for _, r := range convertedRows {
 			t := table.NewWriter()
 			t.SetOutputMirror(os.Stdout)
@@ -140,13 +159,22 @@ func (r *renderer) renderResults(columns []string, rows [][]interface{}) {
 	t.Render()
 }
 
-func rowSize(r []interface{}) int {
-	var buf strings.Builder
-	for _, c := range r {
-		buf.WriteString(fmt.Sprint(c))
+func columnsSize(columns []string) int {
+	size := 0
+	for _, c := range columns {
+		size += len(c) + 4
 	}
 
-	return buf.Len()
+	return size
+}
+
+func rowSize(r []interface{}) int {
+	size := 0
+	for _, c := range r {
+		size += len(fmt.Sprint(c)) + 4
+	}
+
+	return size
 }
 
 func convertRow(r []interface{}) []interface{} {
