@@ -2,8 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
-	"os"
 )
 
 var keywords = map[string]interface{}{
@@ -23,14 +21,14 @@ var keywords = map[string]interface{}{
 func sqlTypeToGo(t *sql.ColumnType) interface{} {
 	switch t.DatabaseTypeName() {
 	case "VARCHAR", "TEXT", "TINYTEXT", "MEDIUMTEXT", "LONGTEXT", "UUID",
-		"JSON", "JSONB", "DATE", "TIMESTAMP", "TIMESTAMPTZ", "DATETIME", "TIME":
+		"JSON", "JSONB", "DATE", "TIMESTAMP", "TIMESTAMPTZ", "DATETIME", "TIME", "YEAR":
 		var s string
 		return &s
-	case "INT", "DECIMAL", "TINYINT", "SMALLINT", "MEDIUMINT", "BIGINT",
+	case "INT", "TINYINT", "SMALLINT", "MEDIUMINT", "BIGINT",
 		"INT2", "INT4":
 		var i int
 		return &i
-	case "FLOAT", "DOUBLE":
+	case "DECIMAL", "FLOAT", "DOUBLE":
 		var f float64
 		return &f
 	case "CHAR":
@@ -40,7 +38,7 @@ func sqlTypeToGo(t *sql.ColumnType) interface{} {
 		var b bool
 		return &b
 	default:
-		fmt.Fprintf(os.Stderr, "unknow type %s\n", t.DatabaseTypeName())
-		return nil
+		var i interface{}
+		return &i
 	}
 }
