@@ -52,7 +52,7 @@ func main() {
 	}
 
 	if len(matches) == 0 {
-		fmt.Fprintf(os.Stderr, "could not match [%q] to a configured db\n", dbName)
+		fmt.Fprintf(os.Stderr, "could not match %q to a configured db\n", dbName)
 		os.Exit(1)
 	} else if len(matches) > 1 {
 		fmt.Fprintf(os.Stderr, "%q matched too many configued dbs\n", dbName)
