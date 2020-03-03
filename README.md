@@ -16,7 +16,7 @@ Features include:
 
 ### Installation
 
-`go get -u github.com/Ackar/pam`
+`GO111MODULE=on go get -u github.com/Ackar/pam`
 
 ### Configuration
 
