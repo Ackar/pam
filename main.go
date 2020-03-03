@@ -88,7 +88,7 @@ func main() {
 			newRenderer(int(prompt.NewStandardInputParser().GetWinSize().Col)),
 			h,
 		)
-		c := newCompleter(db, schemaName, conf.Type)
+		c := newCompleter(db, conf.Type, schemaName)
 		go c.init()
 
 		p := prompt.New(exec.execute, c.suggest,

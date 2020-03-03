@@ -129,12 +129,16 @@ func (r *renderer) renderResults(columns []string, rows [][]interface{}) {
 	}
 
 	if maxRowSize > r.width {
-		for _, r := range convertedRows {
+		for _, row := range convertedRows {
 			t := table.NewWriter()
 			t.SetOutputMirror(os.Stdout)
 			t.SetStyle(table.StyleRounded)
+			t.SetColumnConfigs([]table.ColumnConfig{
+				{Number: 1},
+				{Number: 2, WidthMax: r.width - 50},
+			})
 
-			for i, c := range r {
+			for i, c := range row {
 				t.AppendRow(table.Row{columns[i], c})
 			}
 

@@ -20,6 +20,7 @@ func newCompleter(db *sqlx.DB, dbType, dbName string) *completer {
 	return &completer{
 		db:     db,
 		dbName: dbName,
+		dbType: dbType,
 	}
 }
 
@@ -114,7 +115,7 @@ func (c *completer) suggest(d prompt.Document) []prompt.Suggest {
 	switch lastKeyword {
 	case "SELECT", "WHERE":
 		s = append(s, c.columnsSuggests...)
-	case "FROM":
+	case "FROM", "INTO":
 		s = append(s, c.tablesSuggests...)
 	default:
 	}

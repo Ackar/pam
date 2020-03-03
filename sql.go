@@ -9,7 +9,9 @@ import (
 var keywords = map[string]interface{}{
 	"SELECT": nil,
 	"UPDATE": nil,
+	"INSERT": nil,
 	"FROM":   nil,
+	"INTO":   nil,
 	"VALUES": nil,
 	"WHERE":  nil,
 	"LIMIT":  nil,
@@ -20,7 +22,8 @@ var keywords = map[string]interface{}{
 
 func sqlTypeToGo(t *sql.ColumnType) interface{} {
 	switch t.DatabaseTypeName() {
-	case "VARCHAR", "TEXT", "TINYTEXT", "MEDIUMTEXT", "LONGTEXT":
+	case "VARCHAR", "TEXT", "TINYTEXT", "MEDIUMTEXT", "LONGTEXT", "UUID",
+		"JSON", "JSONB", "DATE", "TIMESTAMP", "TIMESTAMPTZ", "DATETIME", "TIME":
 		var s string
 		return &s
 	case "INT", "DECIMAL", "TINYINT", "SMALLINT", "MEDIUMINT", "BIGINT",
@@ -33,6 +36,9 @@ func sqlTypeToGo(t *sql.ColumnType) interface{} {
 	case "CHAR":
 		var r rune
 		return &r
+	case "BOOL":
+		var b bool
+		return &b
 	default:
 		fmt.Fprintf(os.Stderr, "unknow type %s\n", t.DatabaseTypeName())
 		return nil
