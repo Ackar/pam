@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/go-sql-driver/mysql"
@@ -41,9 +42,30 @@ func main() {
 	}
 
 	dbName := os.Args[1]
-	conf, found := config[dbName]
+	dbRegexp := regexp.MustCompile(dbName)
+	var matches []string
+
+	for db, _ := range config {
+		if dbRegexp.MatchString(db) {
+			matches = append(matches, db)
+		}
+	}
+
+	if len(matches) == 0 {
+		fmt.Fprintf(os.Stderr, "could not match [%q] to a configured db\n", dbName)
+		os.Exit(1)
+	} else if len(matches) > 1 {
+		fmt.Fprintf(os.Stderr, "%q matched too many configued dbs\n", dbName)
+		for _, db := range matches {
+			fmt.Fprintf(os.Stderr, "%s\n", db)
+		}
+		os.Exit(1)
+	}
+
+	matchedDB := matches[0]
+	conf, found := config[matchedDB]
 	if !found {
-		fmt.Fprintf(os.Stderr, "could not find configuration for %q\n", dbName)
+		fmt.Fprintf(os.Stderr, "could not find configuration for %q\n", matchedDB)
 		os.Exit(1)
 	}
 
