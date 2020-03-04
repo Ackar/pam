@@ -94,7 +94,6 @@ func main() {
 		p := prompt.New(exec.execute, c.suggest,
 			prompt.OptionWriter(&CustomWriter{}),
 			prompt.OptionPrefix(dbName+"> "),
-			prompt.OptionPrefixTextColor(prompt.DarkGray),
 			prompt.OptionHistory(h.load()),
 		)
 
