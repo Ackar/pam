@@ -116,7 +116,6 @@ func main() {
 		p := prompt.New(exec.execute, c.suggest,
 			prompt.OptionWriter(&CustomWriter{}),
 			prompt.OptionPrefix(matchedDB+"> "),
-			prompt.OptionPrefixTextColor(prompt.DarkGray),
 			prompt.OptionHistory(h.load()),
 		)
 
