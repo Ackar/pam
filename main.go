@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
+	"unicode"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/go-sql-driver/mysql"
@@ -113,10 +114,61 @@ func main() {
 		c := newCompleter(db, conf.Type, schemaName)
 		go c.init()
 
+		prompt.ASCIISequences = append(prompt.ASCIISequences, &prompt.ASCIICode{
+			Key:       prompt.ControlLeft,
+			ASCIICode: []byte{0x1b, 0x62},
+		})
+		prompt.ASCIISequences = append(prompt.ASCIISequences, &prompt.ASCIICode{
+			Key:       prompt.ControlRight,
+			ASCIICode: []byte{0x1b, 0x66},
+		})
+
 		p := prompt.New(exec.execute, c.suggest,
 			prompt.OptionWriter(&CustomWriter{}),
 			prompt.OptionPrefix(matchedDB+"> "),
 			prompt.OptionHistory(h.load()),
+			prompt.OptionAddKeyBind(prompt.KeyBind{
+				Key: prompt.ControlLeft,
+				Fn: func(buf *prompt.Buffer) {
+					l := []rune(buf.Document().CurrentLineBeforeCursor())
+					i := len(l) - 1
+					// skip initial spaces
+					for ; i >= 0; i-- {
+						if !unicode.IsSpace(l[i]) {
+							break
+						}
+					}
+					// skip the word
+					for ; i >= 0; i-- {
+						if unicode.IsSpace(l[i]) {
+							break
+						}
+					}
+
+					buf.CursorLeft(len(l) - i - 1)
+				},
+			}),
+			prompt.OptionAddKeyBind(prompt.KeyBind{
+				Key: prompt.ControlRight,
+				Fn: func(buf *prompt.Buffer) {
+					l := []rune(buf.Document().CurrentLineAfterCursor())
+					i := 0
+					// skip the word
+					for ; i < len(l); i++ {
+						if unicode.IsSpace(l[i]) {
+							break
+						}
+					}
+					// skip trailing spaces
+					for ; i < len(l); i++ {
+						if !unicode.IsSpace(l[i]) {
+							break
+						}
+					}
+
+					buf.CursorRight(i)
+				},
+			}),
 		)
 
 		p.Run()
