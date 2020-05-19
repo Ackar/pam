@@ -115,7 +115,7 @@ func (c *completer) suggest(d prompt.Document) []prompt.Suggest {
 	switch lastKeyword {
 	case "SELECT", "WHERE":
 		s = append(s, c.columnsSuggests...)
-	case "FROM", "INTO":
+	case "FROM", "INTO", "DESCRIBE":
 		s = append(s, c.tablesSuggests...)
 	default:
 	}
